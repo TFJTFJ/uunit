@@ -1,3 +1,4 @@
 examples/test_*
 examples/result_*.xml
 examples/*.log
+.vs/

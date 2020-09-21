@@ -142,7 +142,7 @@ protected:
 	{
 		tests.emplace_back(std::make_pair(std::bind(fn, obj), name));
 	}
-	#define uUNIT_TEST(func)	  \
+	#define U_TEST(func)	  \
 		registerTest(this, &func, #func)
 
 	void u_assert(bool value, const char* expr,
@@ -157,7 +157,7 @@ protected:
 		}
 	}
 	//! Convenience macro to pass along filename and linenumber
-	#define uUNIT_ASSERT(value)	  \
+	#define U_ASSERT(value)	  \
 		u_assert(value, #value, __FILE__, __LINE__)
 
 	void assert_equal(double expected, double value,
@@ -186,7 +186,7 @@ protected:
 		}
 	}
 	//! Convenience macro to pass along filename and linenumber
-	#define uUNIT_ASSERT_EQUAL(expected, value) \
+	#define U_ASSERT_EQ(expected, value) \
 		assert_equal(expected, value, __FILE__, __LINE__)
 
 private:
