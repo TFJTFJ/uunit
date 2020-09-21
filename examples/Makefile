@@ -9,8 +9,8 @@ all: ${TESTS}
 
 check: all
 	@F="0"; \
-		for T in ${TESTS}; do echo -en "\n$$T: "; ./$$T 2> $$T.log; F=$$(($$F+$$?)); done; \
-		echo -e '\n-----'; echo "Failed tests: $$F"; echo '-----'; \
+		for T in ${TESTS}; do echo "\n$$T: "; ./$$T 2> $$T.log; F=$$(($$F+$$?)); done; \
+		echo '\n-----'; echo "Failed tests: $$F"; echo '-----'; \
 		[ $$F -eq 0 ]
 
 EXAMPLE_TEST_SRC = \
