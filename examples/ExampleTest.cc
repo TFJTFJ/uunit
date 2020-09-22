@@ -8,13 +8,20 @@ class ExampleTest
 public:
 	ExampleTest()
 	{
-		U_TEST(ExampleTest::boundaryTests);
+		uTEST(ExampleTest::boundaryTests);
+		uTEST(ExampleTest::orderTests);
 		U_TEST(ExampleTest::exceptionTests);
+	}
+
+
+	void orderTests()
+	{
+		U_ASSERT_LESS_THAN(B0, B50);
 	}
 
 	void boundaryTests()
 	{
-		U_ASSERT_EQ(B0, getBaud(0));
+		uASSERT(B0, getBaud(0));
 		U_ASSERT_EQ(B0, getBaud(1));
 		U_ASSERT_EQ(B0, getBaud(49));
 

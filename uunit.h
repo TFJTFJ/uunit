@@ -142,6 +142,11 @@ protected:
 	{
 		tests.emplace_back(std::make_pair(std::bind(fn, obj), name));
 	}
+
+	//! Convenience macro for brevity
+	#define uTEST(func) \
+		U_TEST(func)
+
 	#define U_TEST(func)	  \
 		registerTest(this, &func, #func)
 
@@ -199,6 +204,9 @@ protected:
 		}
 	}
 
+	//! Convenience macro for brevity
+	#define uASSERT(expected, value) \
+		U_ASSERT_EQ(expected, value)
 
 	//! Convenience macro to pass along filename and linenumber
 	#define U_ASSERT_EQ(expected, value) \
