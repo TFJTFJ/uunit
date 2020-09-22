@@ -185,9 +185,29 @@ protected:
 			throw test_result{"", file, line, ss.str()};
 		}
 	}
+	template<typename T>
+	void assert_less_than(T op1, T op2,
+		const char* file, std::size_t line)
+	{
+		if (op1 >= op2)
+		{
+			std::stringstream ss;
+			ss << "less-than assertion failed" << std::endl <<
+				"- Expected: " << op1 << sanitize(" < ") << op2 << std::endl <<
+				"- Actual  : " << op1 << sanitize(" >= ") << op2 << std::endl;
+			throw test_result{ "", file, line, ss.str() };
+		}
+	}
+
+
 	//! Convenience macro to pass along filename and linenumber
 	#define U_ASSERT_EQ(expected, value) \
 		assert_equal(expected, value, __FILE__, __LINE__)
+
+
+	//! Convenience macro for less-than assertion
+	#define U_ASSERT_LESS_THAN(op1, op2) \
+		assert_less_than(op1, op2, __FILE__, __LINE__)
 
 private:
 	static std::string sanitize(const std::string& input)
