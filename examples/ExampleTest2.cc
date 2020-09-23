@@ -10,34 +10,18 @@ public:
 	{
 		uTEST(ExampleTest::boundaryTests);
 		uTEST(ExampleTest::orderTests);
-		uTEST(ExampleTest::throwUnexpectedException);
 		U_TEST(ExampleTest::exceptionTests);
-		U_TEST(ExampleTest::failedTest);
-		U_TEST(ExampleTest::severalAssertionsFailTest);
+	}
+
+	void teardown()
+	{
+		throw "Didn't expect this from teardown!";
 	}
 
 	void throwUnexpectedException()
 	{
 		throw "Didn't expect this!";
 	}
-
-	void failedTest()
-	{
-		U_ASSERT(false);
-	}
-
-	void severalAssertionsFailTest()
-	{
-		U_ASSERT(true);
-		U_ASSERT(true);
-		U_ASSERT(true);
-		// std::cout << "Before failed assertion" << std::endl;
-		U_ASSERT(false);
-		// std::cout << "After failed assertion (should not reach here)" << std::endl;
-		U_ASSERT(true);
-		U_ASSERT(true);
-	}
-
 
 	void orderTests()
 	{

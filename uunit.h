@@ -47,6 +47,7 @@ public:
 		std::string file;
 		std::size_t line;
 		std::string msg;
+		std::string failure_type;
 		int id;
 	};
 
@@ -67,11 +68,11 @@ public:
 			for(auto test : suite->tests)
 			{
 				++test_num;
+				failure_type = "Undefined";
 				try
 				{
 					suite->setup();
 					test.first();
-					suite->teardown();
 				}
 				catch(test_result& result)
 				{
@@ -79,14 +80,45 @@ public:
 					fflush(stdout);
 					result.id = test_num;
 					result.func = test.second;
+					result.failure_type = "Assertion";
 					failed_tests.push_back(result);
 					++failed;
-					continue;
+					continue; // Failed test. Proceed with this test suite
 				}
 				catch(...)
 				{
-					break; // Uncaught exception. Do not proceed with this test.
+					test_result result;
+					std::cout << "F";
+					fflush(stdout);
+					result.msg = "Uncaught exception";
+					result.failure_type = "Exception";
+					result.line = 0;
+					result.id = test_num;
+					result.func = test.second;
+					failed_tests.push_back(result);
+					++failed;
+					continue; // Uncaught exception. Proceed with this test suite
 				}
+
+				try
+				{
+					suite->teardown();
+				}
+				catch (...)
+				{
+					test_result result;
+					std::cout << "F";
+					fflush(stdout);
+					result.msg = "Uncaught exception in teardown()";
+					result.failure_type = "Exception";
+					result.id = test_num;
+					result.line = 0;
+					result.func = test.second;
+					failed_tests.push_back(result);
+					++failed;
+					continue; // Uncaught exception in teardown. Proceed with this test suite
+				}
+
 				std::cout << ".";
 				fflush(stdout);
 				test_result result{test.second};
@@ -103,7 +135,7 @@ public:
 		{
 			out << "		<FailedTest id=\"" << test.id << "\">" << std::endl;
 			out << "			<Name>" << sanitize(test.func) << "</Name>" << std::endl;
-			out << "			<FailureType>Assertion</FailureType>" << std::endl;
+			out << "			<FailureType>" << test.failure_type << "</FailureType>" << std::endl;
 			out << "			<Location>" << std::endl;
 			out << "				<File>" << sanitize(test.file) << "</File>" << std::endl;
 			out << "				<Line>" << test.line << "</Line>" << std::endl;
@@ -158,7 +190,7 @@ protected:
 			std::stringstream ss;
 			ss << "assertion failed" << std::endl <<
 				"- Expression: " << expr << "" << std::endl;
-			throw test_result{"", file, line, ss.str()};
+			throw test_result{"", file, line, ss.str()}; // Throw to ensure test is aborted
 		}
 	}
 	//! Convenience macro to pass along filename and linenumber
@@ -246,10 +278,12 @@ private:
 	}
 
 	static uUnit* suite_list;
+	static std::string failure_type;
 	uUnit* next_unit{nullptr};
 	std::vector<std::pair<std::function<void()>, const char*>> tests;
 };
 
 #ifdef uUNIT_MAIN
 uUnit* uUnit::suite_list{nullptr};
+std::string uUnit::failure_type{ "Undefined" };
 #endif
