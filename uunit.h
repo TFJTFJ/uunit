@@ -51,10 +51,8 @@ public:
 		int id;
 	};
 
-	//! Run test
-	//! \param test_suite the name of a test suite or null for all.
-	//! \param test_name the name of a test name inside a test suite. Only valid
-	//!  if test_suite is non-null. nullptr for all tests.
+	//! Run tests
+	//! \param out stream to output nunit-compatible XML to
 	static int runTests(std::ofstream& out)
 	{
 		std::size_t test_num{0};
@@ -63,8 +61,10 @@ public:
 		std::list<test_result> failed_tests;
 		std::list<test_result> successful_tests;
 
+		std::stringstream console_output;
 		for(auto suite = uUnit::suite_list; suite; suite = suite->next_unit)
 		{
+			console_output.clear();
 			for(auto test : suite->tests)
 			{
 				++test_num;
@@ -76,8 +76,7 @@ public:
 				}
 				catch(test_result& result)
 				{
-					std::cout << "F";
-					fflush(stdout);
+					console_output << "F";
 					result.id = test_num;
 					result.func = test.second;
 					result.failure_type = "Assertion";
@@ -87,9 +86,8 @@ public:
 				}
 				catch(...)
 				{
+					console_output << "F";
 					test_result result;
-					std::cout << "F";
-					fflush(stdout);
 					result.msg = "Uncaught exception";
 					result.failure_type = "Exception";
 					result.line = 0;
@@ -99,16 +97,14 @@ public:
 					++failed;
 					continue; // Uncaught exception. Proceed with this test suite
 				}
-
 				try
 				{
 					suite->teardown();
 				}
 				catch (...)
 				{
+					console_output << "F";
 					test_result result;
-					std::cout << "F";
-					fflush(stdout);
 					result.msg = "Uncaught exception in teardown()";
 					result.failure_type = "Exception";
 					result.id = test_num;
@@ -118,17 +114,15 @@ public:
 					++failed;
 					continue; // Uncaught exception in teardown. Proceed with this test suite
 				}
-
-				std::cout << ".";
-				fflush(stdout);
+				console_output << ".";
 				test_result result{test.second};
 				result.id = test_num;
 				successful_tests.push_back(result);
 			}
+			std::cout << console_output.str();
 		}
 
-		out << "<?xml version=\"1.0\" encoding='ISO-8859-1' standalone='yes' ?>" <<
-			std::endl;
+		out << "<?xml version=\"1.0\" encoding='ISO-8859-1' standalone='yes' ?>" << std::endl;
 		out << "<TestRun>" << std::endl;
 		out << "	<FailedTests>" << std::endl;
 		for(auto test : failed_tests)
