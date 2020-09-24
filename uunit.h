@@ -187,6 +187,22 @@ protected:
 			throw test_result{"", file, line, ss.str()}; // Throw to ensure test is aborted
 		}
 	}
+
+	#define U_ASSERT_THROWS(func, type) \
+		try \
+		{ \
+			func; \
+			std::cout << "No exception!" << std::endl;\
+			std::stringstream ss; \
+			ss << "assertion failed" << std::endl << \
+			"- expected exception of type " << #type << \
+			", got no exception" << std::endl; \
+			throw test_result{ "", __FILE__, __LINE__, ss.str() }; \
+		} \
+		catch (type t) \
+		{ \
+		} \
+
 	//! Convenience macro to pass along filename and linenumber
 	#define U_ASSERT(value)	  \
 		u_assert(value, #value, __FILE__, __LINE__)

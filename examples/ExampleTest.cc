@@ -14,6 +14,7 @@ public:
 		U_TEST(ExampleTest::exceptionTests);
 		U_TEST(ExampleTest::failedTest);
 		U_TEST(ExampleTest::severalAssertionsFailTest);
+		U_TEST(ExampleTest::testAssertionThrown);
 	}
 
 	void throwUnexpectedException()
@@ -24,6 +25,14 @@ public:
 	void failedTest()
 	{
 		U_ASSERT(false);
+	}
+
+	void testAssertionThrown()
+	{
+		U_ASSERT_THROWS(getBaud(-1), bad_speed);
+//		U_ASSERT_THROWS(getBaud(-1), int);
+//		U_ASSERT_THROWS(getBaud(), int);
+
 	}
 
 	void severalAssertionsFailTest()
